@@ -32,7 +32,6 @@ contract CustomToken {
 
     function transfer(address to, uint256 value) public returns (bool) {
         require(to != address(0), "Invalid address");
-        require(balanceOf[msg.sender] >= value, "Insufficient balance");
 
         uint256 totalAmount = value + flatRateFee;
         require(
