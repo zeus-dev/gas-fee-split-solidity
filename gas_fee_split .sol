@@ -32,18 +32,16 @@ contract CustomToken {
 
     function transfer(address to, uint256 value) public returns (bool) {
         require(to != address(0), "Invalid address");
+        require(balanceOf[msg.sender] >= value, "Insufficient balance");
 
-        uint256 totalAmount = value + flatRateFee;
-        require(
-            balanceOf[msg.sender] >= totalAmount,
-            "Insufficient balance to cover the transfer and fee"
-        );
+        uint256 fee = flatRateFee;
+        uint256 netValue = value - fee;
 
-        balanceOf[msg.sender] -= totalAmount;
-        balanceOf[to] += value;
-        balanceOf[feeAddress] += flatRateFee; // Send the flat fee to the specified fee address
-        emit Transfer(msg.sender, to, value);
-        emit Transfer(msg.sender, feeAddress, flatRateFee);
+        balanceOf[msg.sender] -= value;
+        balanceOf[to] += netValue;
+        balanceOf[feeAddress] += fee; // Send the flat fee to the specified fee address
+        emit Transfer(msg.sender, to, netValue);
+        emit Transfer(msg.sender, feeAddress, fee);
 
         return true;
     }
